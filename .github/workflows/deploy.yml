@@ -9,8 +9,8 @@ jobs:
         uses: actions/checkout@master
       # 将打包内容发布到 Github Page
       - name: Build and Deploy
-        uses: jenkey2011/vuepress-deploy@master
+        uses: testthedocs/github-pages-deploy-action@master
         env: 
           ACCESS_TOKEN: ${{ secrets.VUE_PRESS }}
-          BUILD_DIR: docs/.vuepress/dist/
+          BUILD_DIR: ./docs/.vuepress/dist/
           BUILD_SCRIPT: yarn && yarn docs:build
