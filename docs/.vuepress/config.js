@@ -1,4 +1,6 @@
 module.exports = {
+    // 部署站点基础路径
+    base: '/project-specification/',
     // 相对路径
     configureWebpack: {
         resolve: {
@@ -17,6 +19,7 @@ module.exports = {
     },
     themeConfig: {
         nav: [
+            { text: 'Git', link: '/git/' },
             { text: 'HTML', link: '/html/' },
             { text: 'CSS', link: '/css/' },
             { text: 'JavaScript', link: '/javascript/' },
