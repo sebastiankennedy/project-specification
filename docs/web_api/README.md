@@ -215,7 +215,7 @@ HTML 文档 Form 元素仅仅支持 GET 和 POST 方法，想要用其他 HTTP �
 
 ### 主机名和端点的共有部分
 
-完整的端点是类似于 `https://api.example.com/v1/users` 这样的 HTTP 的 URI 信息。`https://api.example.com/v1/` 是 API 的共有部分，对这部分内容的设计也有必要进行一番考量。
+完整的端点是类似于 `https://api.example.com/v1/users` 这样的 HTTP 的 URI 信息。 `https://api.example.com/v1/` 是 API 的共有部分，对这部分内容的设计也有必要进行一番考量。
 
 | 在线服务    | 端点的共有部分          |
 |------------|-----------------------|
@@ -239,12 +239,14 @@ OAuth 一般用于面向第三方大范围公开的 API 中的认证工作。
 
 ![oauth](https://sebastiankennedy-club-1256190695.cos.ap-guangzhou.myqcloud.com/images/oauth.png)
 
-OAuth 2.0 的认证流程（Grant Type）有：
+OAuth 2.0 的认证类型（Grant Type）有：
 
 * Authorization Code - 授权码模式
 * Client Credentials - 客户端模式
 * Implicit - 简化模式
 * Resource Owner Password Credentials - 密码模式
+
+根据不同的项目业务需求，可以选择不同的认证类型
 
 OAuth 的端点示例
 
@@ -260,7 +262,6 @@ OAuth 的端点示例
 当正确的信息送达服务器端后，服务器端便会返回如下 JSON 格式的响应信息
 
 ``` 
-
 {
 	"access_token": "令牌",
 	"token_type": "bearer",
@@ -275,7 +276,6 @@ OAuth 的端点示例
 第一种，将 `token` 信息添加到请求信息的首部时，客户端要用到 `Authorization` 首部，并按如下方式指定 token 的内容
 
 ``` 
-
 GET /v1/users HTTP / 1.1
 Host: api.example.com
 Authorization: Bearer lkj123hjkasd879asdiuoqwe7a
@@ -285,7 +285,6 @@ Authorization: Bearer lkj123hjkasd879asdiuoqwe7a
 并用 `access_token` 来命名消息体里的参数，然后附加上 `token` 信息
 
 ``` 
-
 POST /v1/users HTTP / 1.1
 Host: api.example.com
 Content-type: application/x-www-form-urlencoded
@@ -295,18 +294,17 @@ access_token=lkj123hjkasd879asdiuoqwe7a
 第三种，以查询参数的形式添加 token 参数时，可以在名为 access_token 的查询参数后指定 token 信息发送给服务器。
 
 ``` 
-
 GET /v1/users?access_token=lkj123hjkasd879asdiuoqwe7a
 Host: server.example.com
 ```
 
-## 响应数据的设计
+## Web API 响应数据的设计
 
-### 响应数据的格式
+### Web API 响应数据的格式
 
 关于这点不用谈论，选择 JSON 作为默认数据格式即可。
 
-### 响应数据的指定方式
+### Web API 响应数据的指定方式
 
 如果客户端需要支持其他的响应数据格式，有三种方法可以向服务端传达这一信息
 
@@ -317,10 +315,9 @@ Host: server.example.com
 * 使用在请求首部指定媒体类型的方法
     - 在 `HTTP Header` 加入 `Accept: application/json`
 
-推荐使用在请求首部指定媒体类型的方法
+**推荐使用在请求首部指定媒体类型的方法**
 
 ``` 
-
 使用 JSONP
 数据内部结构的思考方法
 让用户来选择响应的内容
@@ -329,28 +326,49 @@ Host: server.example.com
 序列与格式
 ```
 
-### 响应出错信息的设计
+### Web API 响应成功的格式
 
-#### 出错信息的表示
-
-##### 通过状态码来表示出错信息
-
-在返回出错信息之前，首先必须选择合适的状态码。
+**选择合适的状态码来表示响应成功**
 
 * 1 字头：消息
 * 2 字头：成功
 * 3 字头：重定向
-* 4 字头：客户端原因引起的错误
-* 5 字头：服务器端原因引起的错误
 
-##### 向客户端返回详细的出错信息
+| 状态码 | 描述 |
+|------------|-----------------------|
+| 200 | 更新/获取资源成功 |
+| 201 | 创建资源成功 |
+| 204 | 删除资源成功 |
+
+### Web API 响应出错的格式
+
+**选择合适的状态码来表示响应出错**
+
+
+* 4 字头：客户端原因引起的错误
+* 5 字头：服务端原因引起的错误
+
+
+| 状态码 | 描述 |
+|------------|-----------------------|
+| 400 | 业务错误，具体参见下放业务错误代码 |
+| 401 | 认证失败，请返回 认证 检查参数是否有误 |
+| 403 | 无权限调用接口，如：未开通 API 功能 |
+| 404 | 资源不存在 |
+| 405 | 接口请求方式 Method 有误 |
+| 422 | 请求参数校验失败 |
+| 429 | 触达限流限制 |
+| 500 | 服务器应用发生了错误 |
+| 502 | 服务器无法连接 |
+| 503 | 服务器暂不可用 |
+| 504 | 服务器连接超时 |
+
+**向客户端返回详细的出错信息**
 
 返回出错信息的方法有两种：一种是将详细信息放入 HTTP 响应消息首部，另一种则是通过响应消息体返回。
 
 HTTP 响应消息首部
-
 ``` 
-
 X-MYNAME-ERROR-CODE: 2017
 X-MYNAME-ERROR-MESSAGE: Hello world
 X-MYNAME-ERROR-INFO: "..."
@@ -359,7 +377,6 @@ X-MYNAME-ERROR-INFO: "..."
 响应消息体返回
 
 ``` 
-
 {
 	"error": {
 		"code": 2013,
@@ -369,30 +386,25 @@ X-MYNAME-ERROR-INFO: "..."
 }
 ```
 
-##### 发生错误时防止返回 HTML
+### Web API 响应出错注意事项
+
+**发生错误时防止返回**
 
 某些 API 在发生错误时会将 HTML 信息写入信息体，但虽说发生了错误，但客户端依然在访问 API，所以仍然期待服务器返回 JSON 或 XML 等数据格式。
 
-##### 维护与状态码
+**维护与状态码**
 
 当停止 API 来进行维护工作时，不仅仅要使用 503 状态码来告知用户当前服务已经停止，还要使用 `Retry-After` 这一 HTTP 首部来告知用户维护结束的时间。
 
-最大程度地利用 HTTP 协议规范
 
-正确使用状态码 TODO
+## 禁止使用 HTTP 缓存
 
-## 使用 HTTP 缓存
+HTTP 缓存机制分为两类，过期模型和验证模型。过期模型是指预先决定响应数据的保存期限，当到达期限后就会再次访问服务器来重新获取所需的数据；而验证模型则会轮询当前保存的缓存数据是否为最新数据，并只在服务器端进行数据更新时，才重新获取新的数据。
 
-HTTP 缓存机制分为两类，过期模型和验证模型。过期模型是指预先决定响应数据的保存期限，当到达期限后就会再次访问服务器来重新获取所需的数据；
-而验证模型则会轮询当前保存的缓存数据是否为最新数据，并只在服务器端进行数据更新时，才重新获取新的数据。
-
-在 HTTP 协议中，缓存处于可用的状态时成为 `fresh` 状态，而处于不可用的状态时则成为 `stale` 状态
-
-过期模型可以通过在服务器的响应消息里包含何时过期的信息来实现。HTTP 1.1 中定义了两种实现方法：一个方法是用 `Cache-Control` 响应消息首部，
+在 HTTP 协议中，缓存处于可用的状态时成为 `fresh` 状态，而处于不可用的状态时则成为 `stale` 状态。过期模型可以通过在服务器的响应消息里包含何时过期的信息来实现。HTTP 1.1 中定义了两种实现方法：一个方法是用 `Cache-Control` 响应消息首部，
 另一个方法是用 `Expires` 响应消息首部，分别如下所示：
 
 ``` 
-
 Expires: Fri, 01 Jan 2016 00:00:00 GMT
 Cache-Control: max-age=3600
 ```
@@ -411,9 +423,7 @@ HTTP 1.1 还存在「启发式过期」，当服务端没有给出明确的过�
 具体状况等信息，自行决定缓存的过期时间。
 
 不希望实施缓存的情况，可以使用「Cache-Control」首部实现，或者在「Expires」使用过去的日期或不正确的日期也能到达到同样的效果。
-
 ``` 
-
 // 先用验证模型确认返回的资源是否发生了变化，然后根据令牌来确认是否更新缓存
 Cache-Control: no-cache
 
@@ -421,23 +431,9 @@ Cache-Control: no-cache
 Cache-Control: no-store
 ```
 
-## 媒体类型的指定
-
-HTTP 协议中必须指定媒体类型来描述请求信息和响应信息里所承载的数据形式。媒体类型简而言之就是数据格式。
-
-* 使用 Content-Type 指定请求或响应的媒体类型
-* 使用 Accept 指定请求或响应的媒体类型
-* 使用 x- 的媒体类型
-* 使用自定义的媒体类型
-    - 无前缀
-    - vnd. 前缀
-    - prs. 前缀
-    - x. 前缀
-
 ## 同源策略和跨域资源共享
 
-通过 XHTTPRequest 对不同的域进行访问将无法获取响应数据，这一原则成为同源策略(Same Origin Policy)。同源策源主要是出于安全方面的考虑，
-它只允许从相同的源来读取数据，并通过 URI 里的 schema(http，https)，主机(api.example.com)，端口号的组合来判断是否同源。
+通过 ·XHTTPRequest· 对不同的域进行访问将无法获取响应数据，这一原则成为同源策略(Same Origin Policy)。同源策源主要是出于安全方面的考虑，它只允许从相同的源来读取数据，并通过 URI 里的 schema(http，https)，Host(api.example.com)，端口号的组合来判断是否同源。
 
 * http://www.example.com
 * http://api.example.com
@@ -452,16 +448,14 @@ HTTP 协议中必须指定媒体类型来描述请求信息和响应信息里所
 CORS 在特定场景下会先行查询请求是否能被接收。使用 OPTION 方法发送请求。然后服务端会响应这样的请求，并返回如下三个首部：
 
 ``` 
-
-Access-Control-Allow-Origin: 允许源清单
-Access-Control-Allow-Methods: 允许请求方法清单
-Access-Control-Allow-Headers: 允许请求头部清单
+Access-Control-Allow-Origin: *      // 允许源清单
+Access-Control-Allow-Methods: *     // 允许请求方法清单
+Access-Control-Allow-Headers: *     // 允许请求头部清单
 ```
 
 Access-Control-Allow-Max-Age: 允许事先请求的信息在缓存中保存的时间定义私有的 HTTP 首部，如果将 HTTP 首部作为存放元信息的场所，当需要发送无法找到合适首部的元数据时，可以自定义私有的 HTTP 首部，如下所示：
 
 ``` 
-
 X-AppName-PixelRatio: 2.0
 ```
 
