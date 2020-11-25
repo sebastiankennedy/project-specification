@@ -258,6 +258,7 @@ OAuth 的端点示例
 当正确的信息送达服务器端后，服务器端便会返回如下 JSON 格式的响应信息
 
 ``` 
+
 {
 	"access_token": "令牌",
 	"token_type": "bearer",
@@ -272,6 +273,7 @@ OAuth 的端点示例
 第一种，将 `token` 信息添加到请求信息的首部时，客户端要用到 `Authorization` 首部，并按如下方式指定 token 的内容
 
 ``` 
+
 GET /v1/users HTTP / 1.1
 Host: api.example.com
 Authorization: Bearer lkj123hjkasd879asdiuoqwe7a
@@ -281,6 +283,7 @@ Authorization: Bearer lkj123hjkasd879asdiuoqwe7a
 并用 `access_token` 来命名消息体里的参数，然后附加上 `token` 信息
 
 ``` 
+
 POST /v1/users HTTP / 1.1
 Host: api.example.com
 Content-type: application/x-www-form-urlencoded
@@ -290,6 +293,7 @@ access_token=lkj123hjkasd879asdiuoqwe7a
 第三种，以查询参数的形式添加 token 参数时，可以在名为 access_token 的查询参数后指定 token 信息发送给服务器。
 
 ``` 
+
 GET /v1/users?access_token=lkj123hjkasd879asdiuoqwe7a
 Host: server.example.com
 ```
@@ -314,6 +318,7 @@ Host: server.example.com
 推荐使用在请求首部指定媒体类型的方法
 
 ``` 
+
 使用 JSONP
 数据内部结构的思考方法
 让用户来选择响应的内容
@@ -343,6 +348,7 @@ Host: server.example.com
 HTTP 响应消息首部
 
 ``` 
+
 X-MYNAME-ERROR-CODE: 2017
 X-MYNAME-ERROR-MESSAGE: Hello world
 X-MYNAME-ERROR-INFO: "..."
@@ -351,6 +357,7 @@ X-MYNAME-ERROR-INFO: "..."
 响应消息体返回
 
 ``` 
+
 {
 	"error": {
 		"code": 2013,
@@ -383,6 +390,7 @@ HTTP 缓存机制分为两类，过期模型和验证模型。过期模型是指
 另一个方法是用 `Expires` 响应消息首部，分别如下所示：
 
 ``` 
+
 Expires: Fri, 01 Jan 2016 00:00:00 GMT
 Cache-Control: max-age=3600
 ```
@@ -403,6 +411,7 @@ HTTP 1.1 还存在「启发式过期」，当服务端没有给出明确的过�
 不希望实施缓存的情况，可以使用「Cache-Control」首部实现，或者在「Expires」使用过去的日期或不正确的日期也能到达到同样的效果。
 
 ``` 
+
 // 先用验证模型确认返回的资源是否发生了变化，然后根据令牌来确认是否更新缓存
 Cache-Control: no-cache
 
@@ -441,6 +450,7 @@ HTTP 协议中必须指定媒体类型来描述请求信息和响应信息里所
 CORS 在特定场景下会先行查询请求是否能被接收。使用 OPTION 方法发送请求。然后服务端会响应这样的请求，并返回三个首部
 
 ``` 
+
 Access-Control-Allow-Origin: 允许源清单
 Access-Control-Allow-Methods: 允许请求方法清单
 Access-Control-Allow-Headers: 允许请求头部清单
@@ -450,6 +460,7 @@ Access-Control-Allow-Max-Age: 允许事先请求的信息在缓存中保存的�
 定义私有的 HTTP 首部，如果将 HTTP 首部作为存放元信息的场所，当需要发送无法找到合适首部的元数据时，可以自定义私有的 HTTP 首部，如下所示：
 
 ``` 
+
 X-AppName-PixelRatio: 2.0
 ```
 
