@@ -318,7 +318,6 @@ Host: server.example.com
 推荐使用在请求首部指定媒体类型的方法
 
 ``` 
-
 使用 JSONP
 数据内部结构的思考方法
 让用户来选择响应的内容
@@ -447,10 +446,9 @@ HTTP 协议中必须指定媒体类型来描述请求信息和响应信息里所
 `CORS（Cross-Origin Resource Sharing）` 跨域资源共享可以解决同源策略带来的问题。实施 CORS 时，客户端需要使用 Origin 请求首部。然后服务端会检查其中的源
 是否能够允许被访问。并使用 Allow-Origin 响应首部来返回允许访问的源。
 
-CORS 在特定场景下会先行查询请求是否能被接收。使用 OPTION 方法发送请求。然后服务端会响应这样的请求，并返回三个首部
+CORS 在特定场景下会先行查询请求是否能被接收。使用 OPTION 方法发送请求。然后服务端会响应这样的请求，并返回如下三个首部：
 
 ``` 
-
 Access-Control-Allow-Origin: 允许源清单
 Access-Control-Allow-Methods: 允许请求方法清单
 Access-Control-Allow-Headers: 允许请求头部清单
