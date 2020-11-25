@@ -2,7 +2,7 @@
 
 正所谓：不以规矩，不能成方圆。在使用 Laravel 开发 Web API 之前，我们需要了解 Web API 的相关概念与规范，除此之外，我们还需要去了解业界是如何实现 Web API 的，要把业界案例作为参考，从而制定符合公司技术的 Web API 规范。
 
-## Web API 的设计与开发
+## Web API 的设计
 
 ### 什么是 Web API
 
@@ -35,12 +35,13 @@
 * 设计规范明确的内容必须遵守相关规范。
 * 没有设计规范的内容必须遵守相关事实标准。
 
-## 端点的设计与请求的形式
+## Web API 端点与请求的设计
 
 本文中的端点是指用于访问 API 的 URI。一般而言，因为 API 将各种不同的功能进行了封装，所以会拥有多个不同的端点。
-（URI：统一资源标志符，一个用于标识某一互联网资源名称的字符串）
 
-### API 端点基本原则
+> URI：统一资源标志符，一个用于标识某一互联网资源名称的字符串
+
+### Web API 端点基本原则
 
 优秀的 URI 设计，有一个非常重要的原则：容易记忆，URI 包含的功能一目了然。可以把这一条原则细化成多个小原则，如下所示：
 
@@ -71,7 +72,7 @@
         - 获取好友信息：http://api.example.com/friends/100 √
         - 发送消息：http://api.example.com/friends/100/messages √
 
-### HTTP 方法和 API 端点
+### HTTP 方法和 API 端点是什么
 
 HTTP 方法是进行 HTTP 访问时指定的操作，URI 和 HTTP 方法之间的关系可以认为操作对象和操作方法的关系。
 如果把 URI 当作 API 的「操作对象 = 资源」，那么 HTTP 方法则表示「进行怎样的操作」。通过用不同的方法访问一个端点，不但可以获取信息，还能修改信息，删除信息。
@@ -106,7 +107,7 @@ HTML 文档 Form 元素仅仅支持 GET 和 POST 方法，想要用其他 HTTP �
 | 获取指定用户动态     | GET         | http://api.example.com/v1/users/:id/updates             |
 | 获取好友的动态       | GET         | http://api.example.com/v1/users/:id/friends/:id/updates |
 
-#### 获取单个数据
+**获取单个数据**
 
 规范： `GET http://api.example.com/v1/users/:id` ，各大公司的实现方式如下所示：
 
@@ -114,7 +115,7 @@ HTML 文档 Form 元素仅仅支持 GET 和 POST 方法，想要用其他 HTTP �
 * LinkedIn：/companies/123456
 * Foursquare：/venues/123456
 
-#### 获取数据集合
+**获取数据集合**
 
 规范： `GET http://api.example.com/v1/users` ，各大公司的实现方式如下所示：
 
@@ -124,9 +125,9 @@ HTML 文档 Form 元素仅仅支持 GET 和 POST 方法，想要用其他 HTTP �
 * Foursquare：/venuegroups/list
 * Disqus：/blacklists/list.json
 
-#### 自身信息的别名
+**自身信息的别名**
 
-规范： `-` ，各大公司的实现方式如下所示：
+规范： `me` ，各大公司的实现方式如下所示：
 
 * Instagram：/users/self/media/liked
 * Etsy：/users/\_\_SELF__/favorites/listings/12345?method=DELETE
@@ -136,10 +137,9 @@ HTML 文档 Form 元素仅仅支持 GET 和 POST 方法，想要用其他 HTTP �
 * Google Calendar：/users/me/calendarList
 * Xing：/users/me
 
-通过这样设计端点，开发时需要输出哪个用户的信息就必须从认证信息中获取，这就必然会导致自身信息的处理和获取其他用户信息的处理要分开进行。
-可以更容易地防止误将其他用户的个人信息对外公开的 BUG 发生。 
+通过这样设计端点，开发时需要输出哪个用户的信息就必须从认证信息中获取，这就必然会导致自身信息的处理和获取其他用户信息的处理要分开进行。可以更容易地防止误将其他用户的个人信息对外公开的 BUG 发生。 
 
-#### 端点设计注意事项
+### HTTP API 端点设计注意事项
 
 * 使用名词的复数形式
     - 复数形式表示资源的集合
@@ -163,11 +163,11 @@ HTML 文档 Form 元素仅仅支持 GET 和 POST 方法，想要用其他 HTTP �
         - LinkedIn：/v1/people-search
         - Bit.ly：/v3/user/popular_earned_by_clicks
         - Disqus：/api/3.0/applications/listUsage.json
-    - 推荐使用连字符；原因是 Google 推荐使用连字符，使用连字符对 SEO 友好；其次 URI 里的主机名（域名）允许使用连字符而禁止使用下划线，且不区分大小写。而且点子符具有特殊含义。
+    - 推荐使用连字符 `-`；原因是 Google 推荐使用连字符，使用连字符对 SEO 友好；其次 URI 里的主机名（域名）允许使用连字符而禁止使用下划线，且不区分大小写。而且点子符具有特殊含义。
 
 因此，为了使用和主机名一致的规则来统一 URI 命名，用连字符连接多个单词最适合不过。
 
-#### 搜索与查询参数的设计
+**搜索与查询参数的设计**
 
 获取数据量和获取位置的查询参数。这两个参数就是俗称的「分页」参数。各大公司的示例如下：
 
@@ -190,32 +190,32 @@ HTML 文档 Form 元素仅仅支持 GET 和 POST 方法，想要用其他 HTTP �
 
 从中可以看出一般在线服务会用 `limit` 、 `count` 和 `per_page` 来表示获取的数据量，而使用 `page` 、 `offset` 和 `cursor` 来表示获取数据的位置。
 
-使用相对位置存在的问题
+**使用相对位置存在的问题**
 
 * 在 MySQL 等 RDB 中，当使用 `offset` 或 `limit` 来获取指定的数据位置时，随着数据量的增加，响应速度会不断下降。
 * 如果数据更新的频率很高，会导致当前获取的数据出现一定的偏差。
 
-用于过滤的参数。在 API 里设置过滤条件，以此来实现搜索用户的功能。各个在线服务实现如下：
+**用于过滤的参数**
+
+在 API 里设置过滤条件，以此来实现搜索用户的功能。各个在线服务实现如下：
 
 * LinkedIn：http://api.linkedin.com/v1/people-search?first-name=Clair
 * Tumblr：http://api.tumblr.com/v2/blog/pitchersandpoets.tumblr.com/posts?tag=new+york+yankees
 * Instagram：http://api.instagram.com/v1/users/search?q=jack
 * Foursquare：http://api.foursquare.com/v2/venues/search?q=apple&categoryId=asad132421&ll=44.3,37.2&radius=800
 
-#### 查询参数和路径的使用区别
+**查询参数和路径的使用区别**
 
 在设计 URI 时，必须决定是把客户端指定的特定参数放在查询参数里还是路径里，决策的依据有以下两点：
 
 * 是否是表示唯一资源所需的信息
 * 是否可以省略
 
-首先第一点提到了资源是否唯一，这主要基于「URI 表示资源」这一根本思想。像用户 ID 能够表示资源的唯一性，将用户 ID 放在路径中就比较合适。然后是否可以省略，比如罗列、搜索时用到的 `offset` 、 `limit` 或 `page` 参数，如果忽略，很多情况下都会启用默认值
-而不会出错，所以放在查询参数里更为合适。
+首先第一点提到了资源是否唯一，这主要基于「URI 表示资源」这一根本思想。像用户 ID 能够表示资源的唯一性，将用户 ID 放在路径中就比较合适。然后是否可以省略，比如罗列、搜索时用到的 `offset` 、 `limit` 或 `page` 参数，如果忽略，很多情况下都会启用默认值而不会出错，所以放在查询参数里更为合适。
 
 ### 主机名和端点的共有部分
 
-完整的端点是类似于 https://api.example.com/v1/users 这样的 HTTP 的 URI 信息。https://api.example.com/v1/ 是 API 的共有部分，
-对这部分内容的设计也有必要进行一番考量。
+完整的端点是类似于 `https://api.example.com/v1/users` 这样的 HTTP 的 URI 信息。`https://api.example.com/v1/` 是 API 的共有部分，对这部分内容的设计也有必要进行一番考量。
 
 | 在线服务    | 端点的共有部分          |
 |------------|-----------------------|
@@ -231,18 +231,20 @@ HTML 文档 Form 元素仅仅支持 GET 和 POST 方法，想要用其他 HTTP �
 * 在查询字符串里加入版本信息
 * 使用媒体类型来指定版本信息
 
-推荐使用媒体类型来指定版本信息。
+为了遵循短小便于输入的原则，推荐使用媒体类型来指定版本信息。
 
 ### 登录与 OAuth 2.0
 
 OAuth 一般用于面向第三方大范围公开的 API 中的认证工作。
 
+![oauth](https://sebastiankennedy-club-1256190695.cos.ap-guangzhou.myqcloud.com/images/oauth.png)
+
 OAuth 2.0 的认证流程（Grant Type）有：
 
 * Authorization Code - 授权码模式
+* Client Credentials - 客户端模式
 * Implicit - 简化模式
 * Resource Owner Password Credentials - 密码模式
-* Client Credentials - 客户端模式
 
 OAuth 的端点示例
 
@@ -318,6 +320,7 @@ Host: server.example.com
 推荐使用在请求首部指定媒体类型的方法
 
 ``` 
+
 使用 JSONP
 数据内部结构的思考方法
 让用户来选择响应的内容
@@ -449,13 +452,13 @@ HTTP 协议中必须指定媒体类型来描述请求信息和响应信息里所
 CORS 在特定场景下会先行查询请求是否能被接收。使用 OPTION 方法发送请求。然后服务端会响应这样的请求，并返回如下三个首部：
 
 ``` 
+
 Access-Control-Allow-Origin: 允许源清单
 Access-Control-Allow-Methods: 允许请求方法清单
 Access-Control-Allow-Headers: 允许请求头部清单
 ```
 
-Access-Control-Allow-Max-Age: 允许事先请求的信息在缓存中保存的时间
-定义私有的 HTTP 首部，如果将 HTTP 首部作为存放元信息的场所，当需要发送无法找到合适首部的元数据时，可以自定义私有的 HTTP 首部，如下所示：
+Access-Control-Allow-Max-Age: 允许事先请求的信息在缓存中保存的时间定义私有的 HTTP 首部，如果将 HTTP 首部作为存放元信息的场所，当需要发送无法找到合适首部的元数据时，可以自定义私有的 HTTP 首部，如下所示：
 
 ``` 
 
