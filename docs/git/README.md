@@ -84,11 +84,11 @@ npm i -D husky
 
 新建文件 `verify-commit.js` ，输入下面代码：
 
-```js
+``` js
 const msgPath = process.env.HUSKY_GIT_PARAMS
 const msg = require('fs')
-.readFileSync(msgPath, 'utf-8')
-.trim()
+    .readFileSync(msgPath, 'utf-8')
+    .trim()
 
 const commitRE = /^(feat|fix|docs|style|refactor|perf|test|workflow|build|ci|chore|release|workflow)(\(.+\))?: .{1,50}/
 
