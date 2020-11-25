@@ -459,7 +459,7 @@ Access-Control-Allow-Max-Age: 允许事先请求的信息在缓存中保存的�
 X-AppName-PixelRatio: 2.0
 ```
 
-## 开发牢固的 Web API
+## Web API 的安全
 
 * Web API 安全问题：
     - 非法获取服务器端和客户端之间的信息
@@ -490,3 +490,10 @@ X-AppName-PixelRatio: 2.0
             - X-RateLimit-Limit: 单位时间的访问上限
             - X-RateLimit-Reset: 访问次数重置的时间
             - X-RateLimit-Remaining: 剩余的访问次数
+
+## 确认清单
+
+
+
+
+## 项目实施
