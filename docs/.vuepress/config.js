@@ -1,14 +1,17 @@
-module.exports = {
+const { config } = require("vuepress-theme-hope");
+const path = require("path");
+
+module.exports = config({
     // 部署站点基础路径
     base: '/project-specification/',
     // 相对路径
     configureWebpack: {
         resolve: {
-            alias: {
-                "@public": "./public"
-            }
+          alias: {
+            '@img': path.join(__dirname, './public/img/'),
+          }
         }
-    },
+      },
     // 配置站点多语言
     locales: {
         '/': {
@@ -26,8 +29,16 @@ module.exports = {
             { text: 'Vue', link: '/vue/' },
             { text: 'PHP', link: '/php/' },
             { text: 'Laravel', link: '/laravel/' },
+            { text: 'Web API', link: '/web_api/'}
         ],
         // 自动生成侧边栏
         sidebar: 'auto'
+    },
+    configureWebpack: {
+        resolve: {
+            alias: {
+                '@img': 'img'
+            }
+        }
     }
-}
+})
