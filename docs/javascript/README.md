@@ -1,1 +1,1 @@
-# Hello, JavaScript
+# JavaScript 项目开发规范

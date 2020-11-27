@@ -1,4 +1,6 @@
-# 前言
+# Web API 项目开发规范
+
+## 前言
 
 正所谓：不以规矩，不能成方圆。在使用 Laravel 开发 Web API 之前，我们需要了解 Web API 的相关概念与规范，除此之外，我们还需要去了解业界是如何实现 Web API 的，要把业界案例作为参考，从而制定符合公司技术的 Web API 规范。
 
@@ -246,7 +248,7 @@ OAuth 2.0 的认证类型（Grant Type）有：
 * Implicit - 简化模式
 * Resource Owner Password Credentials - 密码模式
 
-根据不同的项目业务需求，可以选择不同的认证类型
+根据不同的项目业务需求，可以选择不同的认证类型。
 
 OAuth 的端点示例
 
@@ -262,6 +264,7 @@ OAuth 的端点示例
 当正确的信息送达服务器端后，服务器端便会返回如下 JSON 格式的响应信息
 
 ``` 
+
 {
 	"access_token": "令牌",
 	"token_type": "bearer",
@@ -276,6 +279,7 @@ OAuth 的端点示例
 第一种，将 `token` 信息添加到请求信息的首部时，客户端要用到 `Authorization` 首部，并按如下方式指定 token 的内容
 
 ``` 
+
 GET /v1/users HTTP / 1.1
 Host: api.example.com
 Authorization: Bearer lkj123hjkasd879asdiuoqwe7a
@@ -285,6 +289,7 @@ Authorization: Bearer lkj123hjkasd879asdiuoqwe7a
 并用 `access_token` 来命名消息体里的参数，然后附加上 `token` 信息
 
 ``` 
+
 POST /v1/users HTTP / 1.1
 Host: api.example.com
 Content-type: application/x-www-form-urlencoded
@@ -294,6 +299,7 @@ access_token=lkj123hjkasd879asdiuoqwe7a
 第三种，以查询参数的形式添加 token 参数时，可以在名为 access_token 的查询参数后指定 token 信息发送给服务器。
 
 ``` 
+
 GET /v1/users?access_token=lkj123hjkasd879asdiuoqwe7a
 Host: server.example.com
 ```
@@ -318,6 +324,7 @@ Host: server.example.com
 **推荐使用在请求首部指定媒体类型的方法**
 
 ``` 
+
 使用 JSONP
 数据内部结构的思考方法
 让用户来选择响应的内容
@@ -344,10 +351,8 @@ Host: server.example.com
 
 **选择合适的状态码来表示响应出错**
 
-
 * 4 字头：客户端原因引起的错误
 * 5 字头：服务端原因引起的错误
-
 
 | 状态码 | 描述 |
 |------------|-----------------------|
@@ -368,7 +373,9 @@ Host: server.example.com
 返回出错信息的方法有两种：一种是将详细信息放入 HTTP 响应消息首部，另一种则是通过响应消息体返回。
 
 HTTP 响应消息首部
+
 ``` 
+
 X-MYNAME-ERROR-CODE: 2017
 X-MYNAME-ERROR-MESSAGE: Hello world
 X-MYNAME-ERROR-INFO: "..."
@@ -377,12 +384,10 @@ X-MYNAME-ERROR-INFO: "..."
 响应消息体返回
 
 ``` 
+
 {
-	"error": {
-		"code": 2013,
-		"message": "Bad authentication token",
-		"info": "..."
-	}
+    "code": 401,
+    "message": "Bad authentication token",
 }
 ```
 
@@ -396,7 +401,6 @@ X-MYNAME-ERROR-INFO: "..."
 
 当停止 API 来进行维护工作时，不仅仅要使用 503 状态码来告知用户当前服务已经停止，还要使用 `Retry-After` 这一 HTTP 首部来告知用户维护结束的时间。
 
-
 ## 禁止使用 HTTP 缓存
 
 HTTP 缓存机制分为两类，过期模型和验证模型。过期模型是指预先决定响应数据的保存期限，当到达期限后就会再次访问服务器来重新获取所需的数据；而验证模型则会轮询当前保存的缓存数据是否为最新数据，并只在服务器端进行数据更新时，才重新获取新的数据。
@@ -405,6 +409,7 @@ HTTP 缓存机制分为两类，过期模型和验证模型。过期模型是指
 另一个方法是用 `Expires` 响应消息首部，分别如下所示：
 
 ``` 
+
 Expires: Fri, 01 Jan 2016 00:00:00 GMT
 Cache-Control: max-age=3600
 ```
@@ -423,7 +428,9 @@ HTTP 1.1 还存在「启发式过期」，当服务端没有给出明确的过�
 具体状况等信息，自行决定缓存的过期时间。
 
 不希望实施缓存的情况，可以使用「Cache-Control」首部实现，或者在「Expires」使用过去的日期或不正确的日期也能到达到同样的效果。
+
 ``` 
+
 // 先用验证模型确认返回的资源是否发生了变化，然后根据令牌来确认是否更新缓存
 Cache-Control: no-cache
 
@@ -448,6 +455,7 @@ Cache-Control: no-store
 CORS 在特定场景下会先行查询请求是否能被接收。使用 OPTION 方法发送请求。然后服务端会响应这样的请求，并返回如下三个首部：
 
 ``` 
+
 Access-Control-Allow-Origin: *      // 允许源清单
 Access-Control-Allow-Methods: *     // 允许请求方法清单
 Access-Control-Allow-Headers: *     // 允许请求头部清单
@@ -456,10 +464,55 @@ Access-Control-Allow-Headers: *     // 允许请求头部清单
 Access-Control-Allow-Max-Age: 允许事先请求的信息在缓存中保存的时间定义私有的 HTTP 首部，如果将 HTTP 首部作为存放元信息的场所，当需要发送无法找到合适首部的元数据时，可以自定义私有的 HTTP 首部，如下所示：
 
 ``` 
+
 X-AppName-PixelRatio: 2.0
 ```
 
-## Web API 的安全
+## Web API 安全的设计
+
+由于 HTTP 协议数据传输采用明文的特点，导致整个传输过程完全透明，任何人都能够在链路中截获、修改或者伪造请求/响应报文。针对 HTTP 明文的特点，常见的攻击手段如下：
+
+### 数据嗅探（Packet Sniffing）
+
+当前越来越多的公共场所开始提供 WiFi 服务，例如星巴克、图书馆、餐厅，然而在这些地方，攻击者却能非常方便地窃取连接同一 WiFi 的用户的通信数据。这一攻击行为叫做数据嗅探。只需将自己的电子设备接入当前 WiFi，并打开数据嗅探工具（WireShark 之类），就能窃取他人的 HTTP 通信数据。如果在公共场所输入私密数据，例如某些网站的账号和密码，无疑将这些信息暴露在攻击者面前。
+
+### 会话劫持（Session Jacking）
+
+会话劫持是可以基于数据嗅探的基础上进行的，攻击者既然能够截获 HTTP 请求，自然能够拿到对应 HTTP 请求的 Cookie 或 Token，通过伪造 HTTP 请求数据和携带对应 Cookie 或 Token，就能冒充用户去访问对应的接口。
+
+### 中间人攻击（MITM）
+
+中间人（MITM）攻击是一种攻击类型，其中攻击者将它自己放到两方之间，通常是客户端和服务端通信线路的中间。这可以通过破坏原始频道之后拦截一方的消息并将它们转发（有时会有改变）给另一方来实现。由于 HTTP 不加密、不认证的特点，针对 Web API 的中间人攻击还是比较容易实施的。
+
+### 跨站脚本攻击（XSS）
+
+XSS 接收用户的输入内容并将其嵌入页面的 HTML 代码，当页面在浏览器里显示时，会自动执行用户输入的 JavaScript 等脚本。一旦页面执行了用户输入的 JavaScript 脚本，攻击者就能访问会话，Cookie 等浏览器里保存的信息，或者篡改页面，甚至还可以不受同源策略的限制进行跨域访问，从而完成任意操作。
+
+### 跨站请求伪造（CSRF）
+
+
+
+### 拒绝服务攻击（Dos）
+
+### 上述安全问题解决方案
+
+### 应对大规模访问的对策
+
+#### 限制每个用户的访问
+
+**用什么样的机制来识别用户**
+**如何确定限速的数值**
+**以什么单位来设置限速的数值**
+**在什么时候重置限速的数值**
+**应对超出上限值的情况**
+
+#### 向用户告知限速的信息
+
+X-RateLimit-Limit: 单位时间的访问上限
+X-RateLimit-Reset: 访问次数重置的时间
+X-RateLimit-Remaining: 剩余的访问次数
+
+### 
 
 * Web API 安全问题：
     - 非法获取服务器端和客户端之间的信息
@@ -479,21 +532,91 @@ X-AppName-PixelRatio: 2.0
         - Strict-Transport-Security
         - Public-Key-Pins
         - Set-Cookie
-    - 应对大规模访问的对策
-        - 限制每个用户的访问
-            - 用什么样的机制来识别用户
-            - 如何确定限速的数值
-            - 以什么单位来设置限速的数值
-            - 在什么时候重置限速的数值
-            - 应对超出上限值的情况
-        - 向用户告知限速的信息
-            - X-RateLimit-Limit: 单位时间的访问上限
-            - X-RateLimit-Reset: 访问次数重置的时间
-            - X-RateLimit-Remaining: 剩余的访问次数
 
-## 确认清单
+## Web API 开发确认清单
 
+### 说明
 
+Web API 检查清单，基于【Web API的设计与开发】书籍内容进行丰富，并给予了必要的解释与说明，方便大家快速浏览与统一协作。
 
+### 清单
 
-## 项目实施
+* [ ] 短小便于输入的 URI
+    - http://api.example.com/service/api/search
+    - http://api.example.com/serach √
+* [ ] 人可以秒懂的 URI
+    - http://api.example.com/sv/u/
+    - http://api.example.com/seihin/1
+    - http://api.example.com/productos/1
+    - http://api.example.com/products/1 √
+* [ ] 没有大小写混用的 URI
+    - http://api.example.com/Users/1
+    - http://api.example.com/API/getUserName
+    - http://api.example.com/USERS/1
+    - http://api.example.com/users/1 √
+* [ ] 修改方便的 URI
+    - http://api.example.com/v1/items/alpha/1
+    - http://api.example.com/v1/items/1 √
+* [ ] 不会暴露服务器架构的 URI
+    - http://api.example.com/cgi-bin/get_user.php?user=100
+    - http://api.example.com/v1/users/100 √
+* [ ] 规则统一的 URI
+    - 不统一的 URI
+        - 获取好友信息：GET http://api.example.com/friends?id=100
+        - 发送站内消息：POST http://api.example.com/friend/100/message
+    - 统一的 URI
+        - 获取好友信息：GET http://api.example.com/friends/100 √
+        - 发送站内消息：POST http://api.example.com/friends/100/messages √
+* [ ] URI 单词要求符合正确的语义性，例如：
+    - 照片应该是 photo 而不是 picture
+* [ ] URI 里用到的名词是否采用了复数形式
+    - 因为URI表示资源的集合，所以作者是建议总是使用复数形式。
+* [ ] URI 不能存在空格符和需要编码的字符
+    - URL是会被urlencode编码的，所以不要在URI里使用空格（会被编码成+）、UTF-8字符、乱七八糟的符号等。
+    - 不能影响可读性
+* [ ] URI 单词和单词之间必须使用 - 连字符链接多个单词，例如：
+    - productSku、ProductSpu、vip_user
+    - product-sku、product-spu、vip-user √
+* [ ] 必须使用 HTTPS 协议
+* [ ] 建议使用合适的 HTTP 方法
+* [ ] 无需缓存的数据，需要添加 Cache-Control: no-cache 首部信息
+* [ ] 需要缓存的数据，合理使用 Cache-Control、ETag、Last-Modified、Vary 等缓存策略
+* [ ] 合理配置 CORS
+* [ ] 响应数据格式采用 JSON 作为默认格式
+* [ ] 响应数据认真执行 JSON 转义
+* [ ] 响应数据出错时，不能返回 HTML 数据（生产环境）
+* [ ] 响应数据里面需要添加各种安全性的首部，例如：
+    -  Secure：表示 Cookie 只能在访问 https 链接时才能被发送给服务端，这样可以彻底避免 Cookie 被攻击者在网络中嗅探到。
+    -  HttpOnly：Cookie 仅能供 HTTP 调用时使用，而不允许 JavaScript 直接获取 Cookie，这样可以避免网站出现 XSS 漏洞的时候，攻击者通过 JS 代码把用户的会话 Cookie 盗走。
+* [ ] 通过版本信息来管理 API（三选一）
+    - 在 URI 中嵌入版本编号
+    - 在查询字符串里加入版本信息
+    - 使用媒体类型来指定版本信息（推荐）
+* [ ] API 版本命名方式需要遵循语义化版本控制规范
+    1. 如果软件API没有变更，只是修复服务端BUG，那么就增加补丁版本号
+    1. 对软件API实施了向下兼容的变更，增加次版本号
+    1. 对软件API实施了不向下兼容的变更时，增加主版本号 
+* [ ] API 在接收参数时需要仔细检查非法参数
+    - 前端后端同时校验
+* [ ] API 更新数据操作必须做到幂等性
+    - 举例，支付请求重复发送时，不会要求用户支付多次，退款请求重复发送时，不会重复退款。 
+* [ ] API 需要根据业务实现访问限速
+    - 获取验证码请求和产品列表请求，最高每分钟请求频率肯定不一致。
+
+### 需要商榷的事项
+
+* 是否使用 RESTFul 风格
+    - 增加了心智负担（我经常想资源、方法和单词怎么组合，尤其是我英文水平又不好）
+    - 增加了人力成本，需要一定的接口设计能力
+    - 采用传统风格（控制器 + 方法名）的方式可能会一目了然，例如：获取用户列表、获取单一用户、当前用户
+        - RESTful
+            - GET http://api.example.com/users?page=1
+            - GET http://api.example.com/users/1
+            - GET http://api.example.com/users/me
+        - 传统风格
+            - GET http://api.example.com/user/get-user-list?page=1
+            - GET http://api.example.com/user/get-user?id=1
+            - GET http://api.example.com/user/get-current-user
+* 是否使用复数形式来表现 URI
+    - 使用 RESTFul 必然就是使用复兴形式表现 URI
+    - 由于控制器、模型的命名通常都是单数形式，使用传统风格用单数在风格上会更加统一

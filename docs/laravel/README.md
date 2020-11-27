@@ -1,1 +1,5 @@
-# Hello, Laravel
+# Laravel 项目开发规范
+
+## 前言
+
+本文基于「Laravel 项目开发规范」系列文档和「Laravel 最佳实践」文章，结合本人项目开发的实践经验编写而成。
