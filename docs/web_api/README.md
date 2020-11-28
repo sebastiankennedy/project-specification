@@ -263,8 +263,7 @@ OAuth 的端点示例
 
 当正确的信息送达服务器端后，服务器端便会返回如下 JSON 格式的响应信息
 
-``` 
-
+```
 {
 	"access_token": "令牌",
 	"token_type": "bearer",
@@ -278,8 +277,7 @@ OAuth 的端点示例
 
 第一种，将 `token` 信息添加到请求信息的首部时，客户端要用到 `Authorization` 首部，并按如下方式指定 token 的内容
 
-``` 
-
+```
 GET /v1/users HTTP / 1.1
 Host: api.example.com
 Authorization: Bearer lkj123hjkasd879asdiuoqwe7a
@@ -288,8 +286,7 @@ Authorization: Bearer lkj123hjkasd879asdiuoqwe7a
 第二种，将 `token` 信息添加到请求体时，则需要将请求消息里的 `Content-Type` 设定为 `application/x-www-form-urlencoded` ，
 并用 `access_token` 来命名消息体里的参数，然后附加上 `token` 信息
 
-``` 
-
+```
 POST /v1/users HTTP / 1.1
 Host: api.example.com
 Content-type: application/x-www-form-urlencoded
@@ -298,8 +295,7 @@ access_token=lkj123hjkasd879asdiuoqwe7a
 
 第三种，以查询参数的形式添加 token 参数时，可以在名为 access_token 的查询参数后指定 token 信息发送给服务器。
 
-``` 
-
+```
 GET /v1/users?access_token=lkj123hjkasd879asdiuoqwe7a
 Host: server.example.com
 ```
@@ -322,16 +318,6 @@ Host: server.example.com
     - 在 `HTTP Header` 加入 `Accept: application/json`
 
 **推荐使用在请求首部指定媒体类型的方法**
-
-``` 
-
-使用 JSONP
-数据内部结构的思考方法
-让用户来选择响应的内容
-封装是否必要
-数据是否应该扁平化
-序列与格式
-```
 
 ### Web API 响应成功的格式
 
@@ -372,24 +358,24 @@ Host: server.example.com
 
 返回出错信息的方法有两种：一种是将详细信息放入 HTTP 响应消息首部，另一种则是通过响应消息体返回。
 
-HTTP 响应消息首部
+HTTP 响应消息头
 
-``` 
-
+```
 X-MYNAME-ERROR-CODE: 2017
 X-MYNAME-ERROR-MESSAGE: Hello world
 X-MYNAME-ERROR-INFO: "..."
 ```
 
-响应消息体返回
+HTTP 响应消息体
 
-``` 
-
+```
 {
     "code": 401,
     "message": "Bad authentication token",
 }
 ```
+
+**必须使用 HTTP 响应消息体返回**
 
 ### Web API 响应出错注意事项
 
@@ -408,8 +394,7 @@ HTTP 缓存机制分为两类，过期模型和验证模型。过期模型是指
 在 HTTP 协议中，缓存处于可用的状态时成为 `fresh` 状态，而处于不可用的状态时则成为 `stale` 状态。过期模型可以通过在服务器的响应消息里包含何时过期的信息来实现。HTTP 1.1 中定义了两种实现方法：一个方法是用 `Cache-Control` 响应消息首部，
 另一个方法是用 `Expires` 响应消息首部，分别如下所示：
 
-``` 
-
+```
 Expires: Fri, 01 Jan 2016 00:00:00 GMT
 Cache-Control: max-age=3600
 ```
@@ -429,8 +414,7 @@ HTTP 1.1 还存在「启发式过期」，当服务端没有给出明确的过�
 
 不希望实施缓存的情况，可以使用「Cache-Control」首部实现，或者在「Expires」使用过去的日期或不正确的日期也能到达到同样的效果。
 
-``` 
-
+```
 // 先用验证模型确认返回的资源是否发生了变化，然后根据令牌来确认是否更新缓存
 Cache-Control: no-cache
 
@@ -454,8 +438,7 @@ Cache-Control: no-store
 
 CORS 在特定场景下会先行查询请求是否能被接收。使用 OPTION 方法发送请求。然后服务端会响应这样的请求，并返回如下三个首部：
 
-``` 
-
+```
 Access-Control-Allow-Origin: *      // 允许源清单
 Access-Control-Allow-Methods: *     // 允许请求方法清单
 Access-Control-Allow-Headers: *     // 允许请求头部清单
@@ -463,8 +446,7 @@ Access-Control-Allow-Headers: *     // 允许请求头部清单
 
 Access-Control-Allow-Max-Age: 允许事先请求的信息在缓存中保存的时间定义私有的 HTTP 首部，如果将 HTTP 首部作为存放元信息的场所，当需要发送无法找到合适首部的元数据时，可以自定义私有的 HTTP 首部，如下所示：
 
-``` 
-
+```
 X-AppName-PixelRatio: 2.0
 ```
 
@@ -476,70 +458,102 @@ X-AppName-PixelRatio: 2.0
 
 当前越来越多的公共场所开始提供 WiFi 服务，例如星巴克、图书馆、餐厅，然而在这些地方，攻击者却能非常方便地窃取连接同一 WiFi 的用户的通信数据。这一攻击行为叫做数据嗅探。只需将自己的电子设备接入当前 WiFi，并打开数据嗅探工具（WireShark 之类），就能窃取他人的 HTTP 通信数据。如果在公共场所输入私密数据，例如某些网站的账号和密码，无疑将这些信息暴露在攻击者面前。
 
+> 解决方案：使用 HTTPS 对 HTTP 通信实施加密。HTTPS 能对 URI 路径、查询字符串、协议部分等几乎所有的数据完成加密，防止监听窃取。
+
 ### 会话劫持（Session Jacking）
 
 会话劫持是可以基于数据嗅探的基础上进行的，攻击者既然能够截获 HTTP 请求，自然能够拿到对应 HTTP 请求的 Cookie 或 Token，通过伪造 HTTP 请求数据和携带对应 Cookie 或 Token，就能冒充用户去访问对应的接口。
+
+> 解决方案：使用 HTTPS 对 HTTP 通信实施加密。HTTPS 能对 URI 路径、查询字符串、协议部分等几乎所有的数据完成加密，防止监听窃取。
 
 ### 中间人攻击（MITM）
 
 中间人（MITM）攻击是一种攻击类型，其中攻击者将它自己放到两方之间，通常是客户端和服务端通信线路的中间。这可以通过破坏原始频道之后拦截一方的消息并将它们转发（有时会有改变）给另一方来实现。由于 HTTP 不加密、不认证的特点，针对 Web API 的中间人攻击还是比较容易实施的。
 
+> 解决方案：使用 HTTPS 对 HTTP 通信实施加密的同时，需要客户端需要做好 SSL 证书的验证工作，避免信任了伪造的证书，导致中间人可以解密 HTTPS 的通信数据。
+
 ### 跨站脚本攻击（XSS）
 
 XSS 接收用户的输入内容并将其嵌入页面的 HTML 代码，当页面在浏览器里显示时，会自动执行用户输入的 JavaScript 等脚本。一旦页面执行了用户输入的 JavaScript 脚本，攻击者就能访问会话，Cookie 等浏览器里保存的信息，或者篡改页面，甚至还可以不受同源策略的限制进行跨域访问，从而完成任意操作。
 
-### 跨站请求伪造（CSRF）
+**解决方案**
 
+* 响应头加上 `Content-Type: application/json`，避免浏览器将响应数据当做 `text/html` 来解释渲染。
+* 响应头加上 `X-Content-Type-Options: nosniff`，避免旧版本 IE 浏览器无视 `Content-Type: application/json` 的声明而将 JSON 当作 HTML 解释渲染。
+* 响应头加上 `X-XSS-Protection: 1; mode=block`，打开浏览器自带的检测、防御 XSS 的功能，能够防范大部分 XSS 的攻击模式。
+* 对相应的 JSON 数据进行转义
 
+### 跨站请求伪造（XSRF）
+
+跨站请求攻击，简单地说，是攻击者通过一些技术手段欺骗用户的浏览器去访问一个自己曾经认证过的网站并运行一些操作（如发邮件，发消息，甚至财产操作如转账和购买商品）。由于浏览器曾经认证过，所以被访问的网站会认为是真正的用户操作而去运行。这利用了 Web 中用户身份验证的一个漏洞：简单的身份验证只能保证请求发自某个用户的浏览器，却不能保证请求本身是用户自愿发出的。
+
+> 解决方案：使用一次性令牌，需要服务端预先准备好令牌的下发机制。一般利用 `X-XSS-Token` 请求头或 Cookie 携带相关信息去访问接口。
 
 ### 拒绝服务攻击（Dos）
 
-### 上述安全问题解决方案
-
-### 应对大规模访问的对策
+拒绝服务攻击即攻击者想办法让目标机器停止提供服务或资源访问。这些资源包括磁盘空间、内存、进程甚至网络带宽，从而阻止正常用户的访问。其实对网络带宽进行的消耗性攻击只是拒绝服务攻击的一小部分，只要能够对目标造成麻烦，使某些服务被暂停甚至主机死机，都属于拒绝服务攻击。拒绝服务攻击问题也一直得不到合理的解决，究其原因是因为这是由于网络协议本身的安全缺陷造成的，从而拒绝服务攻击也成为了攻击者的终极手法。
 
 #### 限制每个用户的访问
 
-**用什么样的机制来识别用户**
-**如何确定限速的数值**
-**以什么单位来设置限速的数值**
-**在什么时候重置限速的数值**
-**应对超出上限值的情况**
+* 用什么样的机制来识别用户
+* 如何确定限速的数值
+* 以什么单位来设置限速的数值
+* 在什么时候重置限速的数值
+* 应对超出上限值的情况
 
 #### 向用户告知限速的信息
 
-X-RateLimit-Limit: 单位时间的访问上限
-X-RateLimit-Reset: 访问次数重置的时间
-X-RateLimit-Remaining: 剩余的访问次数
+* X-RateLimit-Limit: 单位时间的访问上限
+* X-RateLimit-Reset: 访问次数重置的时间
+* X-RateLimit-Remaining: 剩余的访问次数
 
-### 
+### 其他安全相关的 HTTP 首部
 
-* Web API 安全问题：
-    - 非法获取服务器端和客户端之间的信息
-        - 数据分组嗅探(Packet Sniffing)
-        - 会话劫持(Session Jacking)
-    - 利用服务器端的安全漏洞非法获取和篡改信息
-        - 中间人攻击(Man-In-The-Middle-Attack, MITM 攻击)
-    - 预设通过浏览器访问的 API 中的问题
-        - XSS(Cross Site Scripting 跨站脚本攻击)
-        - CSRF(Cross Site Request Forgery 跨站请求伪造)
-        - JSON 劫持
-    - 与安全相关的 HTTP 首部
-        - X-Content-Type-Options
-        - X-XSS-Protection
-        - X-Frame-Options
-        - Content-Security-Policy
-        - Strict-Transport-Security
-        - Public-Key-Pins
-        - Set-Cookie
+#### X-Frame-Options
+
+通过设置该首部，就可以控制某个指定的页面是否允许在 FRAME、IFRAME 里读取数据。因为存在点击劫持（Click Jacking）的攻击，即攻击者将透明的 IFRAME 元素悄悄加载到其他页面，让用户进行点击操作。虽然 Web API 一般不会有 FRAME 元素的存在，但是加上也不会有什么坏处
+
+```
+X-Frame-Options: deny
+```
+
+#### Content-Security-Policy
+
+该首部用于 IMG 元素、SCRIPT 元素、LINK 元素等指向的目标资源的范围，一般来说 Web API 不需要读取其他静态资源，所以可以通过这个首部告诉浏览器不去读取静态资源。
+
+```
+Content-Security-Policy: default-src 'none'
+```
+
+#### Strict-Transport-Security
+
+该首部用于实现 HSTS 功能，能够限制浏览器只使用 HTTPS 方式来访问某个 Web 服务。
+
+```
+Strict-Transport-Security: max-age=15768000
+```
+
+#### Public-Key-Pins
+
+该首部用于实现 HPKP 功能，用于检查站点的 SSL 证书是否是伪造的。服务端会在该首部内写入证书内容的散列值和有效期，当浏览器访问时，就会通过该散列值来验证网站持有的证书是否合法。
+
+```
+Public-Key-Pins: max-age=XXX; pin-sha256=XXXX; pin-sha256=XXX;
+```
+
+#### Set-Cookie
+
+在 `Set-Cookie` 首部设置名为 Secure 和 HttpOnly 的属性，可以大大加强安全性。Secure 表示只有在 HTTPS 通信时才能被发送给服务端。HttpOnly 表示 Cookie 信息仅用于 HTTP 通信，浏览器不能使用 JavaScript 脚本来访问。
+
+```
+Set-Cookie: session=XXXX; Path=/; Secure; HttpOnly
+```
 
 ## Web API 开发确认清单
 
-### 说明
-
 Web API 检查清单，基于【Web API的设计与开发】书籍内容进行丰富，并给予了必要的解释与说明，方便大家快速浏览与统一协作。
 
-### 清单
+### 确认清单
 
 * [ ] 短小便于输入的 URI
     - http://api.example.com/service/api/search
@@ -603,12 +617,11 @@ Web API 检查清单，基于【Web API的设计与开发】书籍内容进行�
 * [ ] API 需要根据业务实现访问限速
     - 获取验证码请求和产品列表请求，最高每分钟请求频率肯定不一致。
 
-### 需要商榷的事项
+### 待商榷的
 
 * 是否使用 RESTFul 风格
-    - 增加了心智负担（我经常想资源、方法和单词怎么组合，尤其是我英文水平又不好）
-    - 增加了人力成本，需要一定的接口设计能力
-    - 采用传统风格（控制器 + 方法名）的方式可能会一目了然，例如：获取用户列表、获取单一用户、当前用户
+    - 增加了心智负担，需要一定的接口设计能力
+    - 采用传统风格（控制器 + 方法名）的方式可能不用耗时在 URL 命名上，例如：获取用户列表、获取单一用户、当前用户
         - RESTful
             - GET http://api.example.com/users?page=1
             - GET http://api.example.com/users/1
