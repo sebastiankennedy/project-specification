@@ -4,7 +4,7 @@ Git 规范分为 Git Workflow 规范和 Git Commit 规范。
 
 ## Git Workflow 规范
 
-![branches](/img/branches.svg)
+![branches](https://sebastiankennedy-club-1256190695.cos.ap-guangzhou.myqcloud.com/images/branches.svg)
 
 首先，项目至少存在两个长期分支，分别是 main、develop 分支；其次，项目可以存在两种短期分支，分别是 feature、hotfix 分支。在项目不大、团队开发成员小于 5 人的情况下，线上只需维护 main、develop 分支即可，其中 main 分支为保护分支，只做合并和生产环境使用，合并分支时需打上标签且注明版本号与版本功能，develop 用于团队成员的日常开发，feature、hotfix 分支根据实际情况决定是否在线上使用，本地开发可以自由使用，建议根据项目任务卡片编号进行命名。
 
